@@ -1,0 +1,100 @@
+/* Styles for Tic Tac Toe page */
+
+:root {
+  font-size: 24px;
+  --font-family: 'Asap', sans-serif;
+  --bg-color: rgb(196, 196, 196);
+  --game-container-bg: rgb(19, 26, 25);
+  --tile-bg: rgb(221, 219, 216);
+  --alt-bg-color: rgb(155, 117, 117);
+  --controls-bg: blue;
+  --hover-bg: rgb(71, 43, 43);
+
+
+  --alt-color: rgb(80, 52, 19);
+  --header-text: rgb(0, 0, 0);
+  --text-color: rgb(0, 0, 0);
+  --text-contrast: rgb(72, 64, 75);
+  --alt-text-color: rgb(201, 201, 201);
+}
+
+* {
+  /* stop ability to select text */
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+  font-family: var(--font-family);
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--bg-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header {
+  height: 10%;
+  width: 100%;
+  background-color: var(--alt-bg-color);
+  color: var(--header-text);
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-container {
+  height: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.board-container {
+  height: 100%;
+  aspect-ratio: 1;
+  background-color: var(--game-container-bg);
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.controls {
+  background-color: var(--controls-bg);
+}
+
+.tile, 
+.X-tile,
+.O-tile {
+  background-color: var(--tile-bg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  display: flex;
+}
+
+.X-tile {
+  background-image: url(./images/x-brush.png);
+}
+
+.O-tile {
+  background-image: url(./images/o-brush.png);
+}
+
+.footer {
+  height: 5%;
+  width: 100%;
+  background-color: var(--alt-bg-color);
+  color: var(--text-contrast);
+  font-size: .6rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
