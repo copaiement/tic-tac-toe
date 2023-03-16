@@ -23,43 +23,37 @@ const gameBoard = (() => {
   // set up game board vector
   let gamePieces = ['', '', '', '', '', '', '', '', ''];
 
-  // get player move
-  const makeMove = ((index, marker) => {
-    gamePieces[index] = marker;
-  });
-
   // reset game board function
-  const reset = (() => {
+  function reset() {
     gamePieces = ['', '', '', '', '', '', '', '', ''];
-  });
+  }
+
+  // update pieces
+  function updateBoard(index, marker) {
+    gamePieces[index] = marker;
+  }
 
   return {
-    gamePieces,
-    makeMove,
+    updateBoard,
     reset,
   };
 })();
 
-// display controller setup
 const displayController = (() => {
   // set up event listeners
-  // if its gameover, do nothing
   const tiles = document.querySelectorAll('.tile');
   tiles.forEach(tile => tile.addEventListener('click', (e) => {
-    if (!gamePlay.gameover) {
-      placePiece(e.target.id, "X");
-    }
+    console.log(e.target.id);
+    gamePlay.playRound(e.target.id.match(/\d/));
   }));
 
   // function to draw pieces
-  const placePiece = ((index, marker) => {
-    // place piece in index
-    gameBoard.gamePieces[index.match(/\d/)] = `${marker}`;
+  function placePiece(index, marker) {
     // place piece on board
-    const playContainer = document.querySelector(`#${index}`);
+    const playContainer = document.querySelector(`#index${index}`);
     playContainer.setAttribute('class', `${marker}-tile`);
-  });
-
+  }
+  return { placePiece };
 })();
 
 // Store players in objects (create with factory)
@@ -86,21 +80,27 @@ const gamePlay = (() => {
   let gameover = false;
   let winner = '';
   let round = 1;
+  // let currentMarker = 'X';
   // set the player type (just human for now)
   const playerOne = player('X', 'human');
   const playerTwo = player('O', 'human');
 
-  // get player move (use EventListener)
-  if (round > 9) {
-    gameover = true;
-    winner = 'draw';
-  }
-  else if (round % 2 !== 0) {
-    displayController.placePiece(e.target.id, playerOne.marker);
-    round ++;
-  } else {
-    displayController.placePiece(e.target.id, playerTwo.marker);
-    round ++;
+  // play one round
+  function playRound(index) {
+    if (round > 9) {
+      gameover = true;
+      winner = 'draw';
+    }
+    else if ((round % 2) !== 0) {
+      console.log(index);
+      gameBoard.updateBoard(index, 'X');
+      displayController.placePiece(index, 'X');
+      round += 1;
+    } else {
+      gameBoard.updateBoard(index, 'O');
+      displayController.placePiece(index, 'O');
+      round += 1;
+    }
   }
 
   // check for win and if so, give gameover
@@ -126,10 +126,7 @@ const gamePlay = (() => {
   // }
 
   return {
-    playerOne,
-    playerTwo,
-    gameover,
-    wins,
+    playRound,
   };
 
 })();
