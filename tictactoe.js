@@ -45,6 +45,7 @@ const gameBoard = (() => {
     updateBoard,
     reset,
     checkMove,
+    gamePieces,
   };
 })();
 
@@ -61,37 +62,42 @@ const displayController = (() => {
     const playContainer = document.querySelector(`#index${index}`);
     playContainer.setAttribute('class', `${marker}-tile`);
   }
-  return { placePiece };
+
+  // results output
+  function results(text) {
+    const resultsOutput = document.querySelector('.results');
+    if (text === 'draw') {
+      resultsOutput.textContent = 'The game is a draw';
+    } else {
+      resultsOutput.textContent = `${text} wins!`;
+    }
+  }
+
+  function clearBoard() {
+    tiles.forEach((tile) => {
+      tile.setAttribute('class', 'tile');
+    });
+  }
+
+  return { placePiece, results, clearBoard };
 })();
 
 // Store players in objects (create with factory)
-const player = (marker, type) => {
+const player = ((marker, type, name) => {
   return {
     marker, 
     type,
+    name,
   };
-};
+});
 
 // Create an object to control flow of game
 const gamePlay = (() => {
-  // winning plays
-  const wins = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-  let gameover = false;
-  let winner = '';
   let round = 1;
   // let currentMarker = 'X';
   // set the player type (just human for now)
-  const playerOne = player('X', 'human');
-  const playerTwo = player('O', 'human');
+  const playerOne = player('X', 'human', 'Test1');
+  const playerTwo = player('O', 'human', 'Test2');
 
   // figure out who's turn it is
   function getPlayer() {
@@ -106,48 +112,49 @@ const gamePlay = (() => {
 
   // play one round
   function playRound(index) {
-    if (round > 9) {
-      gameOver('draw');
-    } else if (!gameBoard.checkMove(index)) {
-      const currentPlayer = getPlayer();
+    const currentPlayer = getPlayer();
+    if (!gameBoard.checkMove(index)) {
       gameBoard.updateBoard(index, currentPlayer.marker);
       displayController.placePiece(index, currentPlayer.marker);
-      checkWinner();
       round += 1;
     }
+    checkWinner(currentPlayer.marker, gameBoard.gamePieces);
   }
 
   function gameOver(winner) {
     console.log("GAME OVER");
+    round = 1;
+    if (winner !== 'draw') {
+      const winName = getPlayer().name;
+      displayController.results(winName);
+      displayController.clearBoard();
+    }
+    displayController.results(winner);
+    displayController.clearBoard();
   }
   // check for win and if so, give gameover
-  function checkWinner() {
-    console.log("I DONT EXIST YET");
-    // if round
+  function checkWinner(marker, board) {
+    const wins = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+    wins.forEach(win => {
+      const isWinner = (winIndex) => board[winIndex] === marker;
+      if (win.every(isWinner)) {
+        gameOver(marker);
+      } else if (round === 9) {
+        gameOver('draw');
+      }
+    });
   }
-  // loop through wins array
-  // for (let i = 0; i < wins.length; i ++) {
-  //   // check each wins array against gameBoard
-    
-    
-  //   if (
-  //     gameBoard.gamePieces[wins[i][0]]
-  //     === gameBoard.gamePieces[wins[i][1]]
-  //     === gameBoard.gamePieces[wins[i][3]]
-  //     === playerOne.marker
-  //     ) {
-  //       return { winner: playerOne, gameover: true };
-  //     } else if (
-
-  //     ) {
-  //       return { winner: playerTwo, gameover: true };
-  //     } else {
-  //       return { gameover: false }
-  //     }
-  // }
-
+  
   return {
     playRound,
   };
-
 })();
