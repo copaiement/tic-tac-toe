@@ -33,9 +33,18 @@ const gameBoard = (() => {
     gamePieces[index] = marker;
   }
 
+  // check if a move is valid
+  function checkMove(index) {
+    if (gamePieces[index] === 'X' || gamePieces[index] === 'O') {
+      return true;
+    }
+    return false;
+  }
+
   return {
     updateBoard,
     reset,
+    checkMove,
   };
 })();
 
@@ -43,7 +52,6 @@ const displayController = (() => {
   // set up event listeners
   const tiles = document.querySelectorAll('.tile');
   tiles.forEach(tile => tile.addEventListener('click', (e) => {
-    console.log(e.target.id);
     gamePlay.playRound(e.target.id.match(/\d/));
   }));
 
@@ -85,25 +93,38 @@ const gamePlay = (() => {
   const playerOne = player('X', 'human');
   const playerTwo = player('O', 'human');
 
+  // figure out who's turn it is
+  function getPlayer() {
+    let currentPlayer;
+    if ((round % 2) !== 0) {
+      currentPlayer = playerOne;
+    } else {
+      currentPlayer = playerTwo;
+    }
+    return currentPlayer;
+  }
+
   // play one round
   function playRound(index) {
     if (round > 9) {
-      gameover = true;
-      winner = 'draw';
-    }
-    else if ((round % 2) !== 0) {
-      console.log(index);
-      gameBoard.updateBoard(index, 'X');
-      displayController.placePiece(index, 'X');
-      round += 1;
-    } else {
-      gameBoard.updateBoard(index, 'O');
-      displayController.placePiece(index, 'O');
+      gameOver('draw');
+    } else if (!gameBoard.checkMove(index)) {
+      const currentPlayer = getPlayer();
+      gameBoard.updateBoard(index, currentPlayer.marker);
+      displayController.placePiece(index, currentPlayer.marker);
+      checkWinner();
       round += 1;
     }
   }
 
+  function gameOver(winner) {
+    console.log("GAME OVER");
+  }
   // check for win and if so, give gameover
+  function checkWinner() {
+    console.log("I DONT EXIST YET");
+    // if round
+  }
   // loop through wins array
   // for (let i = 0; i < wins.length; i ++) {
   //   // check each wins array against gameBoard
