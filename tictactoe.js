@@ -1,23 +1,5 @@
 // Tic Tac Toe script
 
-
-// Goal: as little global code as possible.
-
-// Board:
-// 0  1  2
-// 3  4  5
-// 6  7  8
-
-// Possible wins:
-// 0,1,2
-// 3,4,5
-// 6,7,8
-// 0,3,6
-// 1,4,7
-// 2,5,8
-// 0,4,8
-// 2,4,6
-
 // game board setup
 const gameBoard = (() => {
   // set up game board vector
@@ -51,6 +33,15 @@ const gameBoard = (() => {
 
 const displayController = (() => {
   // set up event listeners
+  // reset btn
+  document.querySelector('.reset').addEventListener('click', () => {
+    gameBoard.reset();
+    gamePlay.reset();
+    results('reset', false);
+    document.querySelectorAll('.X-tile').forEach(tile => tile.setAttribute('class', 'tile'));
+    document.querySelectorAll('.O-tile').forEach(tile => tile.setAttribute('class', 'tile'));
+  });
+  // tiles
   const tiles = document.querySelectorAll('.tile');
   tiles.forEach(tile => tile.addEventListener('click', (e) => {
     gamePlay.playRound(e.target.id.match(/\d/));
@@ -64,12 +55,18 @@ const displayController = (() => {
   }
 
   // results output
-  function results(text) {
+  function results(text, gameOver) {
     const resultsOutput = document.querySelector('.results');
-    if (text === 'draw') {
-      resultsOutput.textContent = 'The game is a draw';
+    if (gameOver) {
+      if (text === 'draw') {
+        resultsOutput.textContent = 'The game is a draw';
+      } else {
+        resultsOutput.textContent = `${text} wins!`;
+      }
+    } else if (text === 'reset') {
+      resultsOutput.textContent = 'X Plays First';
     } else {
-      resultsOutput.textContent = `${text} wins!`;
+      resultsOutput.textContent = `${text}'s turn.`;
     }
   }
 
@@ -93,45 +90,42 @@ const player = ((marker, type, name) => {
 
 // Create an object to control flow of game
 const gamePlay = (() => {
-  let round = 1;
+  let round = 0;
+  let gameover = false;
   // let currentMarker = 'X';
   // set the player type (just human for now)
-  const playerOne = player('X', 'human', 'Test1');
-  const playerTwo = player('O', 'human', 'Test2');
+  let playerOne = player('X', 'human', 'Test1');
+  let playerTwo = player('O', 'human', 'Test2');
 
   // figure out who's turn it is
   function getPlayer() {
     let currentPlayer;
-    if ((round % 2) !== 0) {
+    let lastPlayer;
+    if ((round % 2) === 0) {
       currentPlayer = playerOne;
+      lastPlayer = playerTwo;
     } else {
       currentPlayer = playerTwo;
+      lastPlayer = playerOne;
     }
-    return currentPlayer;
+    return { currentPlayer, lastPlayer };
   }
 
   // play one round
   function playRound(index) {
-    const currentPlayer = getPlayer();
-    if (!gameBoard.checkMove(index)) {
-      gameBoard.updateBoard(index, currentPlayer.marker);
-      displayController.placePiece(index, currentPlayer.marker);
-      round += 1;
+    if (gameover === false) {
+      const currentPlayer = getPlayer().currentPlayer;
+      const lastPlayer = getPlayer().lastPlayer;
+      displayController.results(lastPlayer.name, false);
+      if (!gameBoard.checkMove(index)) {
+        gameBoard.updateBoard(index, currentPlayer.marker);
+        displayController.placePiece(index, currentPlayer.marker);
+        round += 1;
+      }
+      checkWinner(currentPlayer.marker, gameBoard.gamePieces);
     }
-    checkWinner(currentPlayer.marker, gameBoard.gamePieces);
   }
 
-  function gameOver(winner) {
-    console.log("GAME OVER");
-    round = 1;
-    if (winner !== 'draw') {
-      const winName = getPlayer().name;
-      displayController.results(winName);
-      displayController.clearBoard();
-    }
-    displayController.results(winner);
-    displayController.clearBoard();
-  }
   // check for win and if so, give gameover
   function checkWinner(marker, board) {
     const wins = [
@@ -153,8 +147,25 @@ const gamePlay = (() => {
       }
     });
   }
-  
+
+  function gameOver(winner) {
+    console.log("GAME OVER");
+    round = 1;
+    gameover = true;
+    if (winner !== 'draw') {
+      const winName = getPlayer().currentPlayer.name;
+      displayController.results(winName, true);
+    }
+    displayController.results(winner, true);
+  }
+
+  function reset() {
+    round = 0;
+    gameover = false;
+  }
+
   return {
     playRound,
+    reset,
   };
 })();
