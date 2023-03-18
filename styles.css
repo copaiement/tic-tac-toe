@@ -7,7 +7,7 @@
   --game-container-bg: rgb(19, 26, 25);
   --tile-bg: rgb(221, 219, 216);
   --alt-bg-color: rgb(155, 117, 117);
-  --controls-bg: blue;
+  --controls-bg: rgb(44, 177, 110);
   --hover-bg: rgb(71, 43, 43);
 
 
@@ -69,6 +69,7 @@ body {
 
 .controls {
   background-color: var(--controls-bg);
+  width: 5rem;
 }
 
 .tile, 

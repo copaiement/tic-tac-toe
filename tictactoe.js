@@ -7,7 +7,9 @@ const gameBoard = (() => {
 
   // reset game board function
   function reset() {
-    gamePieces = ['', '', '', '', '', '', '', '', ''];
+    for (let i = 0; i < gamePieces.length; i++) {
+      gamePieces[i] = '';
+    }
   }
 
   // update pieces
