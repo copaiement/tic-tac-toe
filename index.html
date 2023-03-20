@@ -25,20 +25,36 @@
       <div class="tile" id="index8"></div>
     </div>
     <div class="controls">
+      <form class="players" action="">
+        <fieldset id="p1">
+          <p class="player-select">Player One Type:</p>
+          <ul>
+            <li>
+              <input type="radio" id="p1-human" name="p1" value="human" checked>
+              <label for="p1-human">Human</label>
+            </li>
+            <li>
+              <input type="radio" id="p1-bot" name="p1" value="bot">
+              <label for="p1-bot">Bot</label>
+            </li>
+          </ul>
+          </fieldset>
+        <fieldset id="p2">
+          <p class="player-select">Player Two Type:</p>
+          <ul>
+            <li>
+              <input type="radio" id="p2-human" name="p2" value="human" checked>
+              <label for="p2-human">Human</label>
+            </li>
+            <li>
+              <input type="radio" id="p2-bot" name="p2" value="bot">
+              <label for="p2-bot">Bot</label>
+            </li>
+          </ul>
+        </fieldset>
+      </form>
 
-      <div class="player-one">
-        <span class="p1-text">Player One</span>
-        <button class="p1-human">Human</button>
-        <button class="p1-bot">Bot</button>
-      </div>
-
-      <div class="player-two">
-        <span class="p2-text">Player Two</span>
-        <button class="p2-human">Human</button>
-        <button class="p2-bot">Bot</button>
-      </div>
-
-      <button class="reset">Reset</button>
+      <button class="reset">Start / Reset</button>
 
     </div>
   </div>

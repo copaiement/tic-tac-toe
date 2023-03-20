@@ -35,18 +35,43 @@ const gameBoard = (() => {
 
 const displayController = (() => {
   // set up event listeners
-  // reset btn
+  // start/reset btn
   document.querySelector('.reset').addEventListener('click', () => {
-    gameBoard.reset();
-    gamePlay.reset();
-    results('reset', false);
-    document.querySelectorAll('.X-tile').forEach(tile => tile.setAttribute('class', 'tile'));
-    document.querySelectorAll('.O-tile').forEach(tile => tile.setAttribute('class', 'tile'));
+    if (gamePlay.gameover === false) {
+      gameBoard.reset();
+      gamePlay.reset();
+      results('reset', false);
+      document.querySelectorAll('.X-tile').forEach(tile => tile.setAttribute('class', 'tile'));
+      document.querySelectorAll('.O-tile').forEach(tile => tile.setAttribute('class', 'tile'));
+    } else {
+      console.log("test");
+      gamePlay.gameover = false;
+      let type1;
+      let type2;
+      let name1;
+      let name2;
+      const p1 = document.getElementsByName('p1');
+      for (let i = 0; i < p1.length; i += i) {
+        if (p1[i].checked) {
+          type1 = p1[i].value;
+        }
+      }
+      const p2 = document.getElementsByName('p2');
+      for (let i = 0; i < p2.length; i += i) {
+        if (p2[i].checked) {
+          type2 = p2[i].value;
+        }
+      }
+      gamePlay.createPlayers(name1, type1, name2, type2);
+    }
   });
   // tiles
   const tiles = document.querySelectorAll('.tile');
   tiles.forEach(tile => tile.addEventListener('click', (e) => {
-    gamePlay.playRound(e.target.id.match(/\d/));
+    console.log("test2");
+    if (gamePlay.gameover === false) {
+      gamePlay.playRound(e.target.id.match(/\d/));
+    }
   }));
 
   // function to draw pieces
@@ -93,11 +118,21 @@ const player = ((marker, type, name) => {
 // Create an object to control flow of game
 const gamePlay = (() => {
   let round = 0;
-  let gameover = false;
+  let gameover = true;
   // let currentMarker = 'X';
   // set the player type (just human for now)
-  let playerOne = player('X', 'human', 'Test1');
-  let playerTwo = player('O', 'human', 'Test2');
+  // let playerOne = player('X', 'human', 'Test1');
+  // let playerTwo = player('O', 'human', 'Test2');
+
+  // create players
+  function createPlayers(name1, type1, name2, type2) {
+    let playerOne = player('X', type1, name1);
+    let playerTwo = player('O', type2, name2);
+    return {
+      playerOne,
+      playerTwo,
+    }
+  }
 
   // figure out who's turn it is
   function getPlayer() {
@@ -112,6 +147,9 @@ const gamePlay = (() => {
     }
     return { currentPlayer, lastPlayer };
   }
+
+  // start the game
+
 
   // play one round
   function playRound(index) {
@@ -169,5 +207,7 @@ const gamePlay = (() => {
   return {
     playRound,
     reset,
+    createPlayers,
+    gameover,
   };
 })();

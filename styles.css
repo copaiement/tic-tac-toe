@@ -1,19 +1,21 @@
 /* Styles for Tic Tac Toe page */
 
 :root {
-  font-size: 24px;
   --font-family: 'Asap', sans-serif;
   --bg-color: rgb(196, 196, 196);
   --game-container-bg: rgb(19, 26, 25);
   --tile-bg: rgb(221, 219, 216);
   --alt-bg-color: rgb(155, 117, 117);
-  --controls-bg: rgb(44, 177, 110);
+  --controls-bg: rgb(49, 53, 51);
+  --radio-unselected: rgb(73, 78, 76);
+  --radio-selected: teal;
   --hover-bg: rgb(71, 43, 43);
 
 
   --alt-color: rgb(80, 52, 19);
   --header-text: rgb(0, 0, 0);
   --text-color: rgb(0, 0, 0);
+  --controls-text-color: rgb(202, 202, 202);
   --text-contrast: rgb(72, 64, 75);
   --alt-text-color: rgb(201, 201, 201);
 }
@@ -26,6 +28,7 @@
   font-family: var(--font-family);
   box-sizing: border-box;
   margin: 0;
+  font-size: 24px;
 }
 
 body {
@@ -51,6 +54,7 @@ body {
 
 .game-container {
   height: 60%;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -69,7 +73,71 @@ body {
 
 .controls {
   background-color: var(--controls-bg);
-  width: 5rem;
+  color: var(--controls-text-color);
+  padding: .5rem;
+  border-radius: .5rem;
+  width: 8rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+ fieldset {
+  border: none;
+ }
+.player-select {
+  font-size: .6rem;
+  font-weight: 700;
+}
+
+label, button {
+  font-size: .6rem;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+li {
+  width: 4rem;
+  height: 1rem;
+  margin-top: .5rem;
+  position: relative;
+}
+
+li label,
+li input {
+  background: var(--radio-unselected);
+  border-radius: .25rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+li input {
+  opacity: 0.011;
+  z-index: 100;
+}
+
+li input:checked + label {
+  background: var(--radio-selected);
+  border-radius: .25rem;
+}
+
+li label {
+  cursor: pointer;
+  z-index: 90;
+  line-height: 1.8em;
+  left: 1;
+  padding-left: .75rem;
+}
+
+button {
+  border-radius: .25rem;
+  border: none;
+  padding: .25rem;
 }
 
 .tile, 
