@@ -7,11 +7,9 @@ const gameBoard = (() => {
 
   // reset game board function
   const reset = () => {
-    for (let i = 0; i < gamePieces.length; i++) {
+    for (let i = 0; i < gamePieces.length; i += 1) {
       gamePieces[i] = '';
     }
-    console.log("gameboard reset");
-    console.log(gamePieces);
   };
 
   // update pieces
@@ -37,47 +35,84 @@ const gameBoard = (() => {
 
 const displayController = (() => {
   // set up event listeners
-  // start/reset btn
-  document.querySelector('.reset').addEventListener('click', () => {
-    console.log(gamePlay.gameover)
-    if (!gamePlay.gameStatus()) {
-      console.log("reset");
-      btnText(`Start Game`);
-      gameBoard.reset();
-      gamePlay.reset();
-      results('reset');
-      document.querySelectorAll('.X-tile').forEach(tile => tile.setAttribute('class', 'tile'));
-      document.querySelectorAll('.O-tile').forEach(tile => tile.setAttribute('class', 'tile'));
+  // start/reset btn and form
+  const toggleStartButton = (control) => {
+    const btn = document.querySelector('.reset');
+    const inputs = document.querySelectorAll('input');
+    if (control === 'on') {
+      btn.classList.add('button-active');
+      btn.disabled = false;
+      for (let i = 0; i < inputs.length; i += 1) {
+        inputs[i].disabled = false;
+      }
     } else {
-      btnText(`Reset`);
-      let type1;
-      let type2;
-      let name1;
-      let name2;
-      gamePlay.startGame();
-      // get human or bot info from radio buttons
-      const p1 = document.getElementsByName('p1');
-      for (let i = 0; i < p1.length; i += 1) {
-        if (p1[i].checked) {
-          type1 = p1[i].value;
-        }
+      btn.classList.remove('button-active');
+      btn.disabled = true;
+      for (let i = 0; i < inputs.length; i += 1) {
+        inputs[i].disabled = true;
       }
-      const p2 = document.getElementsByName('p2');
-      for (let i = 0; i < p2.length; i += 1) {
-        if (p2[i].checked) {
-          type2 = p2[i].value;
-        }
-      }
-      gamePlay.createPlayers(name1, type1, name2, type2);
     }
+  };
+
+  document.querySelector('.reset').addEventListener('click', () => {
+    btnText('Start Game');
+    gameBoard.reset();
+    gamePlay.reset();
+    results('reset');
+    document.querySelectorAll('.X-tile').forEach(tile => tile.setAttribute('class', 'tile'));
+    document.querySelectorAll('.O-tile').forEach(tile => tile.setAttribute('class', 'tile'));
+    let type1;
+    let type2;
+    gamePlay.startGame();
+    const p1 = document.getElementsByName('p1');
+    for (let i = 0; i < p1.length; i += 1) {
+      if (p1[i].checked) {
+        type1 = p1[i].value;
+      }
+    }
+    const p2 = document.getElementsByName('p2');
+    for (let i = 0; i < p2.length; i += 1) {
+      if (p2[i].checked) {
+        type2 = p2[i].value;
+      }
+    }
+    let name1 = document.getElementById('p1-name').value;
+    let name2 = document.getElementById('p2-name').value;
+    gamePlay.createPlayers(name1, type1, name2, type2);
+    updateVisibility();
+    toggleStartButton();
+    results('start', name1);
   });
-  // tiles
-  const tiles = document.querySelectorAll('.tile');
-  tiles.forEach(tile => tile.addEventListener('click', (e) => {
-    if (!gamePlay.gameStatus()) {
-      gamePlay.playRound(e.target.id.match(/\d/));
+
+  const toggleTiles = (text) => {
+    const tiles = document.querySelectorAll('.tile');
+    if (text === 'on') {
+      tiles.forEach(tile => tile.addEventListener('click', tilesClick));
+    } else {
+      tiles.forEach(tile => tile.removeEventListener('click', tilesClick));
     }
-  }));
+  };
+
+  // tiles function
+  const tilesClick = (e) => {
+    gamePlay.playRound(e.target.id.match(/\d/));
+  };
+
+  // function to update visibility of board
+  const updateVisibility = (text) => {
+    const board = document.querySelector('.board-container');
+    const controls = document.querySelector('.controls');
+    const tiles = document.querySelectorAll('.tile');
+    if (text === 'prep') {
+      board.classList.add('deactivate');
+      controls.classList.remove('deactivate');
+      tiles.forEach(tile => tile.classList.remove('tile-active'));
+    } else {
+      board.classList.remove('deactivate');
+      controls.classList.add('deactivate');
+      tiles.forEach(tile => tile.classList.add('tile-active'));
+    }
+  }
 
   // function to draw pieces
   const placePiece = (index, marker) => {
@@ -93,20 +128,17 @@ const displayController = (() => {
   };
 
   // results output
-  const results = (text) => {
+  const results = (text, name) => {
     const resultsOutput = document.querySelector('.results');
-    if (gamePlay.gameStatus()) {
-      if (text === 'draw') {
-        resultsOutput.textContent = 'The game is a draw';
-      } else {
-        resultsOutput.textContent = `${text} wins!`;
-      }
-    } else if (text === 'reset') {
-      resultsOutput.textContent = 'X Plays First';
+    if (text === 'start') {
+      resultsOutput.textContent = `${name} plays first`;
+    } else if (text === 'draw') {
+      resultsOutput.textContent = 'The game is a draw!';
+    } else if (text === 'win') {
+      resultsOutput.textContent = `${name} wins!`;
     } else {
-      resultsOutput.textContent = `${text}'s turn.`;
+      resultsOutput.textContent = `${name} plays.`;
     }
-    console.log("result printed");
   };
 
   const clearBoard = () => {
@@ -115,7 +147,14 @@ const displayController = (() => {
     });
   };
 
-  return { placePiece, results, clearBoard };
+  return {
+    placePiece,
+    results,
+    clearBoard,
+    updateVisibility,
+    toggleStartButton,
+    toggleTiles,
+  };
 })();
 
 // Store players in objects (create with factory)
@@ -137,16 +176,15 @@ const gamePlay = (() => {
   let gameover = true;
   let playerOne;
   let playerTwo;
-  // let currentMarker = 'X';
-  // set the player type (just human for now)
-  // let playerOne = player('X', 'human', 'Test1');
-  // let playerTwo = player('O', 'human', 'Test2');
-  
+
   // get the status of the game
   const gameStatus = () => { return gameover; };
-  
+
   // start the game
-  const startGame = () => { gameover = false; };
+  const startGame = () => {
+    gameover = false;
+    displayController.toggleTiles('on');
+  };
   // create players
   const createPlayers = (name1, type1, name2, type2) => {
     playerOne = player('X', type1, name1);
@@ -179,6 +217,7 @@ const gamePlay = (() => {
         displayController.placePiece(index, currentPlayer.marker);
         round += 1;
       }
+      displayController.results('play', lastPlayer.name);
       checkWinner(currentPlayer.marker, gameBoard.gamePieces);
     }
   };
@@ -198,28 +237,24 @@ const gamePlay = (() => {
     wins.forEach(win => {
       const isWinner = (winIndex) => board[winIndex] === marker;
       if (win.every(isWinner)) {
-        gameOver(marker);
+        gameOver();
+        displayController.results('win', getPlayer().lastPlayer.name);
       } else if (round === 9) {
-        gameOver('draw');
+        gameOver();
+        displayController.results('draw');
       }
     });
   };
 
-  const gameOver = (winner) => {
-    console.log("GAME OVER");
-    round = 1;
-    gameover = true;
-    if (winner !== 'draw') {
-      const winName = getPlayer().currentPlayer.name;
-      displayController.results(winName, true);
-    }
-    displayController.results(winner, true);
+  const gameOver = () => {
+    displayController.toggleTiles('off');
+    displayController.updateVisibility('prep');
+    displayController.toggleStartButton('on');
   };
 
   const reset = () => {
     round = 0;
     gameover = true;
-    console.log("gameplay reset");
   };
 
   return {

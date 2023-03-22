@@ -10,7 +10,7 @@
 </head>
 <body>
   <div class="header">
-    
+    <div class="title">Tic Tac Toe</div>
   </div>
   <div class="game-container">
     <div class="board-container deactivate">
@@ -25,9 +25,9 @@
       <div class="tile" id="index8"></div>
     </div>
     <div class="controls">
-      <form class="players" action="">
+      <form class="players">
         <fieldset id="p1">
-          <p class="player-select">Player One</p>
+          <p class="player-select">Player X</p>
           <p class="player-info">Name:</p>
           <input class="name-input" type="text" id="p1-name" required/>
           <p class="player-info">Type:</p>
@@ -43,7 +43,7 @@
           </ul>
           </fieldset>
         <fieldset id="p2">
-          <p class="player-select">Player Two</p>
+          <p class="player-select">Player O</p>
           <p class="player-info">Name:</p>
           <input class="name-input" type="text" id="p2-name" required/>
           <p class="player-info">Type:</p>
@@ -60,13 +60,13 @@
         </fieldset>
       </form>
 
-      <button class="reset">Start Game</button>
+      <button class="reset button-active">Start Game</button>
 
     </div>
   </div>
-  <div class="results">X Plays First</div>
+  <div class="results"></div>
   <div class="footer">
-
+    <div class="footer">Design by C. Paiement, 2023</div>
   </div>
 </body>
 </html>
