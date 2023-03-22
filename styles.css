@@ -9,7 +9,7 @@
   --controls-bg: rgb(49, 53, 51);
   --radio-unselected: rgb(73, 78, 76);
   --radio-selected: teal;
-  --hover-bg: rgb(71, 43, 43);
+  --button-hover: rgb(163, 192, 130);
 
 
   --alt-color: rgb(80, 52, 19);
@@ -71,6 +71,10 @@ body {
   gap: 8px;
 }
 
+.deactivate {
+  opacity: .25;
+}
+
 .controls {
   background-color: var(--controls-bg);
   color: var(--controls-text-color);
@@ -84,9 +88,16 @@ body {
  fieldset {
   border: none;
  }
-.player-select {
+
+.player-select,
+.player-info {
   font-size: .6rem;
   font-weight: 700;
+}
+
+.player-select {
+  font-size: .75rem;
+  margin-bottom: .5rem;
 }
 
 label, button {
@@ -134,10 +145,25 @@ li label {
   padding-left: .75rem;
 }
 
+.name-input {
+  width: 100%;
+  font-size: .75rem;
+  margin: .5rem 0;
+}
+
 button {
   border-radius: .25rem;
   border: none;
   padding: .25rem;
+}
+
+button:hover {
+  scale: 1.05;
+  background-color: var(--button-hover);
+}
+
+button:active {
+  background-color: orange;
 }
 
 .tile, 
@@ -147,6 +173,15 @@ button {
   background-size: contain;
   background-repeat: no-repeat;
   display: flex;
+}
+
+.tile {
+  opacity: .75;
+}
+
+.tile:hover {
+  scale: 1.01;
+  opacity: 1;
 }
 
 .X-tile {
