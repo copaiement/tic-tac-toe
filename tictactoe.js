@@ -25,10 +25,26 @@ const gameBoard = (() => {
     return false;
   };
 
+  // get bot move
+  const getBotMove = () => {
+    const availableMoves = [];
+    // find all available moves
+    for (let i = 0; i < gamePieces.length; i += 1) {
+      if (gamePieces[i] !== 'X' && gamePieces[i] !== 'O') {
+        availableMoves.push(i);
+      }
+    }
+    // select one random move from available moves
+    const botMoveIndex = Math.floor(Math.random() * availableMoves.length);
+    const botMove = availableMoves[botMoveIndex];
+    return botMove;
+  };
+
   return {
     updateBoard,
     reset,
     checkMove,
+    getBotMove,
     gamePieces,
   };
 })();
@@ -82,6 +98,10 @@ const displayController = (() => {
     updateVisibility();
     toggleStartButton();
     results('start', name1);
+    // if p1 is a bot, play a round
+    if (type1 === 'bot') {
+      gamePlay.playRound(gameBoard.getBotMove());
+    }
   });
 
   const toggleTiles = (text) => {
@@ -159,11 +179,7 @@ const displayController = (() => {
 
 // Store players in objects (create with factory)
 const player = (marker, type, name) => {
-  const playerTurn = () => {
-    
-  };
   return {
-    playerTurn,
     marker,
     type,
     name,
@@ -207,20 +223,46 @@ const gamePlay = (() => {
 
   // play one round
   const playRound = (index) => {
-    console.log(gameover);
-    if (gameover === false) {
-      const currentPlayer = getPlayer().currentPlayer;
-      const lastPlayer = getPlayer().lastPlayer;
-      displayController.results(lastPlayer.name, false);
-      if (!gameBoard.checkMove(index)) {
-        gameBoard.updateBoard(index, currentPlayer.marker);
-        displayController.placePiece(index, currentPlayer.marker);
-        round += 1;
-      }
-      displayController.results('play', lastPlayer.name);
-      checkWinner(currentPlayer.marker, gameBoard.gamePieces);
+    const currentPlayer = getPlayer().currentPlayer;
+    const lastPlayer = getPlayer().lastPlayer;
+    
+    if (!gameBoard.checkMove(index)) {
+      gameBoard.updateBoard(index, currentPlayer.marker);
+      displayController.placePiece(index, currentPlayer.marker);
+      round += 1;
+    }
+    // update results and check for a winner
+    displayController.results('play', lastPlayer.name);
+    checkWinner(currentPlayer.marker, gameBoard.gamePieces);
+
+    console.log('currentPlayer', currentPlayer.type);
+    console.log('lastPlayer', lastPlayer.type);
+
+    // if lastPlayer is bot, get new bot move and call this function again
+    if (lastPlayer.type === 'bot' && !gameover) {
+      console.log('loop test');
+      setTimeout(() => {playRound(gameBoard.getBotMove()); }, 500);
     }
   };
+
+  // const playRound = (index) => {
+  //   if (gameover === false) {
+  //     const currentPlayer = getPlayer().currentPlayer;
+  //     const lastPlayer = getPlayer().lastPlayer;
+  //     console.log(currentPlayer);
+  //     displayController.results(lastPlayer.name, false);
+  //     if (currentPlayer.type === 'bot') {
+  //       gameBoard.updateBoard(gameBoard.getBotMove(), currentPlayer.marker);
+  //     }
+  //     if (!gameBoard.checkMove(index)) {
+  //       gameBoard.updateBoard(index, currentPlayer.marker);
+  //       displayController.placePiece(index, currentPlayer.marker);
+  //       round += 1;
+  //     }
+  //     displayController.results('play', lastPlayer.name);
+  //     checkWinner(currentPlayer.marker, gameBoard.gamePieces);
+  //   }
+  // };
 
   // check for win and if so, give gameover
   const checkWinner = (marker, board) => {
@@ -250,6 +292,7 @@ const gamePlay = (() => {
     displayController.toggleTiles('off');
     displayController.updateVisibility('prep');
     displayController.toggleStartButton('on');
+    gameover = true;
   };
 
   const reset = () => {
